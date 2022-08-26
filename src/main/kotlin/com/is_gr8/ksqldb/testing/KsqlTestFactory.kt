@@ -98,8 +98,8 @@ class KsqlTestFactory {
                 }
             }
             testExecutor.buildAndExecuteQuery(testCase, testExecutionListener)
-        } catch (e: AssertionError) {
-            fail(e.message)
+//        } catch (e: AssertionError) {
+//            fail(e.message)
         } catch (e: Exception) {
             fail(e.message)
         } finally {
