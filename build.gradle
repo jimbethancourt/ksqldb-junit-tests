@@ -1,5 +1,5 @@
 plugins {
-    id 'org.jetbrains.kotlin.jvm' version '1.4.0'
+    id 'org.jetbrains.kotlin.jvm' version '1.6.0'
 }
 
 group 'org.example'
@@ -17,8 +17,8 @@ repositories {
 }
 
 dependencies {
-    implementation "io.confluent.ksql:ksqldb-functional-tests:6.0.1"
-    implementation "org.junit.jupiter:junit-jupiter-engine:5.7.0"
+    implementation "io.confluent.ksql:ksqldb-functional-tests:7.2.1"
+    implementation "org.junit.jupiter:junit-jupiter-engine:5.9.0"
 }
 
 test {

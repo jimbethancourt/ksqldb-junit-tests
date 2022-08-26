@@ -10,7 +10,10 @@ import org.junit.jupiter.api.DynamicTest
 import org.junit.jupiter.api.fail
 import java.io.File
 import java.io.IOException
+import java.nio.file.Path
+import java.nio.file.Paths
 import java.util.*
+import java.util.function.Function
 import java.util.stream.Stream
 import kotlin.streams.asStream
 
@@ -45,6 +48,7 @@ class KsqlTestFactory {
             "KSQL_Test",
             Optional.empty(),
             null,
+            emptyList<String>(),
             inputRecordNodes?.inputRecords,
             outRecordNodes.outputRecords,
             emptyList(),
@@ -54,7 +58,11 @@ class KsqlTestFactory {
             null as PostConditionsNode?,
             true
         )
-        val testCase = TestCaseBuilder.buildTests(testCaseNode, ksqlFile.toPath())[0]
+        val stmtsPath: Path = Paths.get(ksqlFile.absolutePath)
+        val location = PathLocation(stmtsPath)
+
+        val testCase = TestCaseBuilder.buildTests(testCaseNode, ksqlFile.toPath(),
+            Function { name: String? -> location })[0]
         return DynamicTest.dynamicTest(ksqlFile.path) { executeTestCase(testCase) }
     }
 
@@ -81,7 +89,7 @@ class KsqlTestFactory {
     }
 
     private fun executeTestCase(testCase: TestCase) {
-        val testExecutor = TestExecutor.create()
+        val testExecutor = TestExecutor.create(true, Optional.empty())
         try {
             val testExecutionListener = object : TestExecutionListener {
                 override fun acceptQuery(query: PersistentQueryMetadata?) {
