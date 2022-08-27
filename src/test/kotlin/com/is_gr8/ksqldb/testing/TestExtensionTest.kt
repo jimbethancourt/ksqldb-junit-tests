@@ -18,7 +18,7 @@ class TestExtensionTest(private val ksqlTestFactory: KsqlTestFactory) {
     }
 
     /*
-    //Fails when uncommented.  This is expcted, but not sure how to assert AssertionError expected for Dynamic Tests
+    //Fails when uncommented.  This is expected, but not sure how to assert AssertionError expected for Dynamic Tests
     @TestFactory
     internal fun testBazPipeline(): Stream<DynamicTest> {
         return ksqlTestFactory.findKsqlTestCases("ksql-samples/baz") // {AssertionError::class.java }

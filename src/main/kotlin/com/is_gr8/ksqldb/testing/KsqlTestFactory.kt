@@ -22,6 +22,7 @@ class KsqlTestFactory {
     private val objectMapper: ObjectMapper = TestJsonMapper.INSTANCE.get()
 
 
+    @JvmOverloads
     fun findKsqlTestCases(
         pathname: String,
         ksqlExtension: String = "ksql",
