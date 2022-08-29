@@ -13,34 +13,70 @@ import java.io.IOException
 import java.nio.file.Path
 import java.nio.file.Paths
 import java.util.*
-import java.util.function.Function
 import java.util.stream.Stream
 import kotlin.streams.asStream
 
-class KsqlTestFactory {
-
+class KsqlTestFactory (_ksqlFileExtension: String = "ksql") {
+    private val ksqlExtension = _ksqlFileExtension
     private val objectMapper: ObjectMapper = TestJsonMapper.INSTANCE.get()
 
 
     @JvmOverloads
     fun findKsqlTestCases(
-        pathname: String,
-        ksqlExtension: String = "ksql",
+        pathName: String,
         inputFileName: String = "input.json",
-        outputfileName: String = "output.json"
+        outputFileName: String = "output.json"
     ): Stream<DynamicTest> {
-        return File(pathname).walk()
+        return File(pathName).walk()
             .filter { file: File -> file.isDirectory && file.listFiles()?.any { it.extension == ksqlExtension } == true}
             .map { testCaseFolder: File ->
                 val contents = testCaseFolder.listFiles()!!
                 val ksqlFile = contents.first { it.extension == ksqlExtension }
                 val inputFile = contents.first { it.name == inputFileName }
-                val outputFile = contents.first { it.name == outputfileName }
-                createTestFromTriple(ksqlFile, inputFile, outputFile)
+                val outputFile = contents.first { it.name == outputFileName }
+                createDynamicTestFromTriple(ksqlFile, inputFile, outputFile)
             }.asStream()
     }
 
-    private fun createTestFromTriple(ksqlFile: File, inputFile: File, outputFile: File): DynamicTest {
+    @JvmOverloads
+    fun runKsqlTestCase(
+        ksqlFile: String,
+        inputFileName: String = "input.json",
+        outputFileName: String = "output.json"
+    ) {
+        val ksqlFileObj = File(ksqlFile)
+        val inputFile = File(ksqlFileObj.parent + File.separator + inputFileName)
+        val outputFile = File(ksqlFileObj.parent + File.separator + outputFileName)
+        executeTestCase(createTestCaseFromTriple(ksqlFileObj, inputFile, outputFile))
+    }
+
+    @JvmOverloads
+    fun runKsqlTestCaseShouldFail(
+        ksqlFile: String,
+        inputFileName: String = "input.json",
+        outputFileName: String = "output.json"
+    ) {
+        val ksqlFileObj = File(ksqlFile)
+        val inputFile = File(ksqlFileObj.parent + File.separator + inputFileName)
+        val outputFile = File(ksqlFileObj.parent + File.separator + outputFileName)
+        try {
+            executeTestCase(createTestCaseFromTriple(ksqlFileObj, inputFile, outputFile))
+            fail("Test failure expected") //line should not be reached
+        } catch (e: AssertionError) {
+            //do nothing, allow test to pass since failure is expected
+        }
+    }
+
+    private fun createDynamicTestFromTriple(ksqlFile: File, inputFile: File, outputFile: File): DynamicTest {
+        val testCase = createTestCaseFromTriple(ksqlFile, inputFile, outputFile)
+        return DynamicTest.dynamicTest(ksqlFile.path) { executeTestCase(testCase) }
+    }
+
+    private fun createTestCaseFromTriple(
+        ksqlFile: File,
+        inputFile: File,
+        outputFile: File
+    ): TestCase {
         val statements = getKsqlStatements(ksqlFile)
         val inputRecordNodes: InputRecordsNode? = readInputRecords(inputFile)
         val outRecordNodes: OutputRecordsNode = readOutputRecordNodes(outputFile)
@@ -62,9 +98,7 @@ class KsqlTestFactory {
         val stmtsPath: Path = Paths.get(ksqlFile.absolutePath)
         val location = PathLocation(stmtsPath)
 
-        val testCase = TestCaseBuilder.buildTests(testCaseNode, ksqlFile.toPath(),
-            Function { name: String? -> location })[0]
-        return DynamicTest.dynamicTest(ksqlFile.path) { executeTestCase(testCase) }
+        return TestCaseBuilder.buildTests(testCaseNode, ksqlFile.toPath()) { location }[0]
     }
 
     private fun readOutputRecordNodes(outputFile: File): OutputRecordsNode {
@@ -99,8 +133,7 @@ class KsqlTestFactory {
                 }
             }
             testExecutor.buildAndExecuteQuery(testCase, testExecutionListener)
-//        } catch (e: AssertionError) {
-//            fail(e.message)
+            //allow AssertionError to bubble up to allow for creation of negative tests
         } catch (e: Exception) {
             fail(e.message)
         } finally {

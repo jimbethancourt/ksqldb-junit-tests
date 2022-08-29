@@ -1,6 +1,8 @@
 package com.is_gr8.ksqldb.testing
 
-import org.junit.jupiter.api.*
+import org.junit.jupiter.api.DynamicTest
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.TestFactory
 import java.util.stream.Stream
 
 class KsqlTest {
@@ -15,12 +17,27 @@ class KsqlTest {
         return ksqlTestFactory.findKsqlTestCases("ksql-samples/foo")
     }
 
-    /*
-    //Fails when uncommented.  This is expected, but not sure how to assert AssertionError expected for Dynamic Tests
-    @TestFactory
-    fun testBazPipeline(): Stream<DynamicTest> {
-        return ksqlTestFactory.findKsqlTestCases("ksql-samples/baz") // {AssertionError::class.java }
-    }*/
+    @Test
+    fun testBarPipelineSingleFile() {
+        ksqlTestFactory.runKsqlTestCase(
+            "ksql-samples/bar/01_example/example-from-ksql-docs.ksql"
+        )
+    }
+
+    @Test
+    fun testBarPipelineSingleFileSpecifyInputOutputFiles() {
+        ksqlTestFactory.runKsqlTestCase(
+            "ksql-samples/bar/01_example/example-from-ksql-docs.ksql",
+            "input.json", "output.json"
+        )
+    }
+
+    @Test
+    fun testBazPipelineSingleFileShouldFail() {
+        return ksqlTestFactory.runKsqlTestCaseShouldFail(
+            "ksql-samples/baz/01_example/failing-example.ksql"
+        )
+    }
 
     companion object {
         private val ksqlTestFactory = KsqlTestFactory()
