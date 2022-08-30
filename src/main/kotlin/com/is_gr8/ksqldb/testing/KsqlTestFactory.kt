@@ -38,29 +38,27 @@ class KsqlTestFactory (_ksqlFileExtension: String = "ksql") {
             }.asStream()
     }
 
-    @JvmOverloads
     fun runKsqlTestCase(
-        ksqlFile: String,
-        inputFileName: String = "input.json",
-        outputFileName: String = "output.json"
+        ksqlFilePath: String,
+        inputFilePath: String,
+        outputFilePath: String
     ) {
-        val ksqlFileObj = File(ksqlFile)
-        val inputFile = File(ksqlFileObj.parent + File.separator + inputFileName)
-        val outputFile = File(ksqlFileObj.parent + File.separator + outputFileName)
-        executeTestCase(createTestCaseFromTriple(ksqlFileObj, inputFile, outputFile))
+        val ksqlFile = File(ksqlFilePath)
+        val inputFile = File(inputFilePath)
+        val outputFile = File(outputFilePath)
+        executeTestCase(createTestCaseFromTriple(ksqlFile, inputFile, outputFile))
     }
 
-    @JvmOverloads
     fun runKsqlTestCaseShouldFail(
-        ksqlFile: String,
-        inputFileName: String = "input.json",
-        outputFileName: String = "output.json"
+        ksqlFilePath: String,
+        inputFilePath: String,
+        outputFilePath: String
     ) {
-        val ksqlFileObj = File(ksqlFile)
-        val inputFile = File(ksqlFileObj.parent + File.separator + inputFileName)
-        val outputFile = File(ksqlFileObj.parent + File.separator + outputFileName)
+        val ksqlFile = File(ksqlFilePath)
+        val inputFile = File(inputFilePath)
+        val outputFile = File(outputFilePath)
         try {
-            executeTestCase(createTestCaseFromTriple(ksqlFileObj, inputFile, outputFile))
+            executeTestCase(createTestCaseFromTriple(ksqlFile, inputFile, outputFile))
             fail("Test failure expected") //line should not be reached
         } catch (e: AssertionError) {
             //do nothing, allow test to pass since failure is expected

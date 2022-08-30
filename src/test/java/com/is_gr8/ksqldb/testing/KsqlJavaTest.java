@@ -23,20 +23,19 @@ class KsqlJavaTest {
     @Test
     void testBarPipelineSingleFile() {
         ksqlTestFactory.runKsqlTestCase(
-                "ksql-samples/bar/01_example/example-from-ksql-docs.ksql");
-    }
-
-    @Test
-    void testBarPipelineSingleFileSpecifyInputOutputFiles() {
-        ksqlTestFactory.runKsqlTestCase(
                 "ksql-samples/bar/01_example/example-from-ksql-docs.ksql",
-                "input.json", "output.json");
+                "ksql-samples/bar/01_example/input.json",
+                "ksql-samples/bar/01_example/output.json"
+        );
     }
 
     @Test
     void testBazPipelineSingleFileShouldFail() {
         ksqlTestFactory.runKsqlTestCaseShouldFail(
-                "ksql-samples/baz/01_example/failing-example.ksql");
+                "ksql-samples/baz/01_example/failing-example.ksql",
+                "ksql-samples/baz/01_example/input.json",
+                "ksql-samples/baz/01_example/output.json"
+        );
     }
 
 }
