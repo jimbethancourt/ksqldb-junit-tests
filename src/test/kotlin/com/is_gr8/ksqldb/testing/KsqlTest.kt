@@ -19,7 +19,7 @@ class KsqlTest {
 
     @TestFactory
     fun testBazFailingPipeline(): Stream<DynamicTest> {
-        return ksqlTestFactory.findKsqlTestCases("ksql-samples/baz")
+        return ksqlTestFactory.findKsqlNegativeTestCases("ksql-samples/baz")
     }
 
     @Test

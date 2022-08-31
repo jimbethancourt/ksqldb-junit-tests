@@ -24,8 +24,8 @@ class KsqlTestFactory (_ksqlFileExtension: String = "ksql") {
     @JvmOverloads
     fun findKsqlTestCases(
         pathName: String,
-        inputFileName: String = "negativeInput.json",
-        outputFileName: String = "negativeOutput.json"
+        inputFileName: String = "input.json",
+        outputFileName: String = "output.json"
     ): Stream<DynamicTest> {
         return File(pathName).walk()
             .filter { file: File -> file.isDirectory && file.listFiles()?.any { it.extension == ksqlExtension } == true}
