@@ -20,6 +20,11 @@ class KsqlJavaTest {
         return ksqlTestFactory.findKsqlTestCases("ksql-samples/foo");
     }
 
+    @TestFactory
+    Stream<DynamicTest> testBazFailingPipeline() {
+        return ksqlTestFactory.findKsqlNegativeTestCases("ksql-samples/baz");
+    }
+
     @Test
     void testBarPipelineSingleFile() {
         ksqlTestFactory.runKsqlTestCase(
@@ -33,8 +38,8 @@ class KsqlJavaTest {
     void testBazPipelineSingleFileShouldFail() {
         ksqlTestFactory.runKsqlTestCaseShouldFail(
                 "ksql-samples/baz/01_example/failing-example.ksql",
-                "ksql-samples/baz/01_example/input.json",
-                "ksql-samples/baz/01_example/output.json"
+                "ksql-samples/baz/01_example/negativeInput.json",
+                "ksql-samples/baz/01_example/negativeOutput.json"
         );
     }
 

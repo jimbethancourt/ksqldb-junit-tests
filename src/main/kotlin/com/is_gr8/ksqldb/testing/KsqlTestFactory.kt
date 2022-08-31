@@ -24,8 +24,8 @@ class KsqlTestFactory (_ksqlFileExtension: String = "ksql") {
     @JvmOverloads
     fun findKsqlTestCases(
         pathName: String,
-        inputFileName: String = "input.json",
-        outputFileName: String = "output.json"
+        inputFileName: String = "negativeInput.json",
+        outputFileName: String = "negativeOutput.json"
     ): Stream<DynamicTest> {
         return File(pathName).walk()
             .filter { file: File -> file.isDirectory && file.listFiles()?.any { it.extension == ksqlExtension } == true}
@@ -35,6 +35,23 @@ class KsqlTestFactory (_ksqlFileExtension: String = "ksql") {
                 val inputFile = contents.first { it.name == inputFileName }
                 val outputFile = contents.first { it.name == outputFileName }
                 createDynamicTestFromTriple(ksqlFile, inputFile, outputFile)
+            }.asStream()
+    }
+
+    @JvmOverloads
+    fun findKsqlNegativeTestCases(
+        pathName: String,
+        inputFileName: String = "negativeInput.json",
+        outputFileName: String = "negativeOutput.json"
+    ): Stream<DynamicTest> {
+        return File(pathName).walk()
+            .filter { file: File -> file.isDirectory && file.listFiles()?.any { it.extension == ksqlExtension } == true}
+            .map { testCaseFolder: File ->
+                val contents = testCaseFolder.listFiles()!!
+                val ksqlFile = contents.first { it.extension == ksqlExtension }
+                val inputFile = contents.first { it.name == inputFileName }
+                val outputFile = contents.first { it.name == outputFileName }
+                createDynamicFailingTestFromTriple(ksqlFile, inputFile, outputFile)
             }.asStream()
     }
 
@@ -68,6 +85,19 @@ class KsqlTestFactory (_ksqlFileExtension: String = "ksql") {
     private fun createDynamicTestFromTriple(ksqlFile: File, inputFile: File, outputFile: File): DynamicTest {
         val testCase = createTestCaseFromTriple(ksqlFile, inputFile, outputFile)
         return DynamicTest.dynamicTest(ksqlFile.path) { executeTestCase(testCase) }
+    }
+
+    private fun createDynamicFailingTestFromTriple(ksqlFile: File, inputFile: File, outputFile: File): DynamicTest {
+        val testCase = createTestCaseFromTriple(ksqlFile, inputFile, outputFile)
+        return DynamicTest.dynamicTest(ksqlFile.path) {
+            try {
+                executeTestCase(createTestCaseFromTriple(ksqlFile, inputFile, outputFile))
+                fail("Test failure expected for " + ksqlFile.path) //line should not be reached
+            } catch (e: AssertionError) {
+                print("This failure is expected: \n" + e.message)
+                //do nothing, allow test to pass since failure is expected
+            }
+        }
     }
 
     private fun createTestCaseFromTriple(
