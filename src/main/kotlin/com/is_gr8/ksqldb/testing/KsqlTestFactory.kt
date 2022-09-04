@@ -16,7 +16,8 @@ import java.util.*
 import java.util.stream.Stream
 import kotlin.streams.asStream
 
-class KsqlTestFactory (_ksqlFileExtension: String = "ksql") {
+
+class KsqlTestFactory(_ksqlFileExtension: String = "ksql") {
     private val ksqlExtension = _ksqlFileExtension
     private val objectMapper: ObjectMapper = TestJsonMapper.INSTANCE.get()
 
@@ -27,16 +28,35 @@ class KsqlTestFactory (_ksqlFileExtension: String = "ksql") {
         inputFileName: String = "input.json",
         outputFileName: String = "output.json"
     ): Stream<DynamicTest> {
-        return File(pathName).walk()
-            .filter { file: File -> file.isDirectory && file.listFiles()?.any { it.extension == ksqlExtension } == true}
-            .map { testCaseFolder: File ->
-                val contents = testCaseFolder.listFiles()!!
-                val ksqlFile = contents.first { it.extension == ksqlExtension }
-                val inputFile = contents.first { it.name == inputFileName }
-                val outputFile = contents.first { it.name == outputFileName }
-                createDynamicTestFromTriple(ksqlFile, inputFile, outputFile)
-            }.asStream()
+        val path = File(pathName).absolutePath
+        val ksqlPath = File("src/main/ksql" + File.separator + pathName).absolutePath
+        val pipelinePath = File("src/main/pipeline" + File.separator + pathName).absolutePath
+        val resourcesPath = File("src/main/resources" + File.separator + pathName).absolutePath
+
+        val dynamicTests =
+            createDynamicTests(path, inputFileName, outputFileName) +
+                    createDynamicTests(ksqlPath, inputFileName, outputFileName) +
+                    createDynamicTests(pipelinePath, inputFileName, outputFileName) +
+                    createDynamicTests(resourcesPath, inputFileName, outputFileName);
+
+        return dynamicTests.asStream()
     }
+
+    private fun createDynamicTests(
+        ksqlFilesPath: String,
+        inputFileName: String,
+        outputFileName: String
+    ) = File(ksqlFilesPath).walk()
+        .filter { file: File ->
+            file.isDirectory && file.listFiles()?.any { it.extension == ksqlExtension } == true
+        }
+        .map { testCaseFolder: File ->
+            val contents = testCaseFolder.listFiles()!!
+            val ksqlFile = contents.first { it.extension == ksqlExtension }
+            val inputFile = contents.first { it.name == inputFileName }
+            val outputFile = contents.first { it.name == outputFileName }
+            createDynamicTestFromTriple(ksqlFile, inputFile, outputFile)
+        }
 
     @JvmOverloads
     fun findKsqlNegativeTestCases(
@@ -44,16 +64,35 @@ class KsqlTestFactory (_ksqlFileExtension: String = "ksql") {
         inputFileName: String = "negativeInput.json",
         outputFileName: String = "negativeOutput.json"
     ): Stream<DynamicTest> {
-        return File(pathName).walk()
-            .filter { file: File -> file.isDirectory && file.listFiles()?.any { it.extension == ksqlExtension } == true}
-            .map { testCaseFolder: File ->
-                val contents = testCaseFolder.listFiles()!!
-                val ksqlFile = contents.first { it.extension == ksqlExtension }
-                val inputFile = contents.first { it.name == inputFileName }
-                val outputFile = contents.first { it.name == outputFileName }
-                createDynamicFailingTestFromTriple(ksqlFile, inputFile, outputFile)
-            }.asStream()
+        val path = File(pathName).absolutePath
+        val ksqlPath = File("src/main/ksql" + File.separator + pathName).absolutePath
+        val pipelinePath = File("src/main/pipeline" + File.separator + pathName).absolutePath
+        val resourcesPath = File("src/main/resources" + File.separator + pathName).absolutePath
+
+        val dynamicNegativeTests =
+            createDynamicNegativeTests(path, inputFileName, outputFileName) +
+                    createDynamicNegativeTests(ksqlPath, inputFileName, outputFileName) +
+                    createDynamicNegativeTests(pipelinePath, inputFileName, outputFileName) +
+                    createDynamicNegativeTests(resourcesPath, inputFileName, outputFileName);
+
+        return dynamicNegativeTests.asStream()
     }
+
+    private fun createDynamicNegativeTests(
+        ksqlFilesPath: String,
+        inputFileName: String,
+        outputFileName: String
+    ) = File(ksqlFilesPath).walk()
+        .filter { file: File ->
+            file.isDirectory && file.listFiles()?.any { it.extension == ksqlExtension } == true
+        }
+        .map { testCaseFolder: File ->
+            val contents = testCaseFolder.listFiles()!!
+            val ksqlFile = contents.first { it.extension == ksqlExtension }
+            val inputFile = contents.first { it.name == inputFileName }
+            val outputFile = contents.first { it.name == outputFileName }
+            createDynamicFailingTestFromTriple(ksqlFile, inputFile, outputFile)
+        }
 
     fun runKsqlTestCase(
         ksqlFilePath: String,
@@ -157,6 +196,7 @@ class KsqlTestFactory (_ksqlFileExtension: String = "ksql") {
             val testExecutionListener = object : TestExecutionListener {
                 override fun acceptQuery(query: PersistentQueryMetadata?) {
                     // a printed topology might be helpful when tests fail
+                    println(testCase.name)
                     print(query?.topologyDescription)
                 }
             }
