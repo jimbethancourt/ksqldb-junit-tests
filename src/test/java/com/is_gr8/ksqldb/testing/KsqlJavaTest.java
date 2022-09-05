@@ -26,7 +26,7 @@ class KsqlJavaTest {
     }
 
     @Test
-    void testBarPipelineSingleFile() {
+    void testBarSingleFile() {
         ksqlTestFactory.runKsqlTestCase(
                 "ksql-samples/bar/01_example/example-from-ksql-docs.ksql",
                 "ksql-samples/bar/01_example/input.json",
@@ -35,11 +35,65 @@ class KsqlJavaTest {
     }
 
     @Test
-    void testBazPipelineSingleFileShouldFail() {
+    void testBazSingleFileShouldFail() {
         ksqlTestFactory.runKsqlTestCaseShouldFail(
                 "ksql-samples/baz/01_example/failing-example.ksql",
                 "ksql-samples/baz/01_example/negativeInput.json",
                 "ksql-samples/baz/01_example/negativeOutput.json"
+        );
+    }
+
+    @Test
+    void testBarSrcMainKsqlSamplesSingleFile() {
+        ksqlTestFactory.runKsqlTestCase(
+                "ksql-samples/bar/03_example/example-from-ksql-docs.ksql",
+                "ksql-samples/bar/03_example/input.json",
+                "ksql-samples/bar/03_example/output.json"
+        );
+    }
+
+    @Test
+    void testBarSrcMainKsqlSamplesSingleFileShouldFail() {
+        ksqlTestFactory.runKsqlTestCaseShouldFail(
+                "ksql-samples/baz/03_example/failing-example.ksql",
+                "ksql-samples/baz/03_example/negativeInput.json",
+                "ksql-samples/baz/03_example/negativeOutput.json"
+        );
+    }
+
+    @Test
+    void testBarSrcMainPipelineSingleFile() {
+        ksqlTestFactory.runKsqlTestCase(
+                "ksql-samples/bar/04_example/example-from-ksql-docs.ksql",
+                "ksql-samples/bar/04_example/input.json",
+                "ksql-samples/bar/04_example/output.json"
+        );
+    }
+
+    @Test
+    void testBazSrcMainPipelineSingleFileShouldFail() {
+        ksqlTestFactory.runKsqlTestCaseShouldFail(
+                "ksql-samples/baz/04_example/failing-example.ksql",
+                "ksql-samples/baz/04_example/negativeInput.json",
+                "ksql-samples/baz/04_example/negativeOutput.json"
+        );
+    }
+
+    @Test
+    void testBarSrcMainResourcesPipelineSingleFile() {
+        ksqlTestFactory.runKsqlTestCase(
+                "ksql-samples/bar/05_example/example-from-ksql-docs.ksql",
+                "ksql-samples/bar/05_example/input.json",
+                "ksql-samples/bar/05_example/output.json"
+        );
+    }
+
+    @Test
+    void testBazSrcMainResourcesSingleFileShouldFail() {
+        ksqlTestFactory.runKsqlTestCaseShouldFail(
+                "ksql-samples/baz/05_example/failing-example.ksql",
+                "ksql-samples/baz/05_example/negativeInput.json",
+                "ksql-samples/baz/05_example/negativeOutput.json"
         );
     }
 

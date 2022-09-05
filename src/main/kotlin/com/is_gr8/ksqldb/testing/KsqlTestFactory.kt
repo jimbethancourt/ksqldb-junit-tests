@@ -21,6 +21,10 @@ class KsqlTestFactory(_ksqlFileExtension: String = "ksql") {
     private val ksqlExtension = _ksqlFileExtension
     private val objectMapper: ObjectMapper = TestJsonMapper.INSTANCE.get()
 
+    private val ksqlSrcDir = "src/main/ksql"
+    private val pipelineSrcDir = "src/main/pipeline"
+    private val resourcesDir = "src/main/resources"
+
 
     @JvmOverloads
     fun findKsqlTestCases(
@@ -29,9 +33,9 @@ class KsqlTestFactory(_ksqlFileExtension: String = "ksql") {
         outputFileName: String = "output.json"
     ): Stream<DynamicTest> {
         val path = File(pathName).absolutePath
-        val ksqlPath = File("src/main/ksql" + File.separator + pathName).absolutePath
-        val pipelinePath = File("src/main/pipeline" + File.separator + pathName).absolutePath
-        val resourcesPath = File("src/main/resources" + File.separator + pathName).absolutePath
+        val ksqlPath = File(ksqlSrcDir + File.separator + pathName).absolutePath
+        val pipelinePath = File(pipelineSrcDir + File.separator + pathName).absolutePath
+        val resourcesPath = File(resourcesDir + File.separator + pathName).absolutePath
 
         val dynamicTests =
             createDynamicTests(path, inputFileName, outputFileName) +
@@ -65,9 +69,9 @@ class KsqlTestFactory(_ksqlFileExtension: String = "ksql") {
         outputFileName: String = "negativeOutput.json"
     ): Stream<DynamicTest> {
         val path = File(pathName).absolutePath
-        val ksqlPath = File("src/main/ksql" + File.separator + pathName).absolutePath
-        val pipelinePath = File("src/main/pipeline" + File.separator + pathName).absolutePath
-        val resourcesPath = File("src/main/resources" + File.separator + pathName).absolutePath
+        val ksqlPath = File(ksqlSrcDir + File.separator + pathName).absolutePath
+        val pipelinePath = File(pipelineSrcDir + File.separator + pathName).absolutePath
+        val resourcesPath = File(resourcesDir + File.separator + pathName).absolutePath
 
         val dynamicNegativeTests =
             createDynamicNegativeTests(path, inputFileName, outputFileName) +
@@ -99,10 +103,52 @@ class KsqlTestFactory(_ksqlFileExtension: String = "ksql") {
         inputFilePath: String,
         outputFilePath: String
     ) {
-        val ksqlFile = File(ksqlFilePath)
-        val inputFile = File(inputFilePath)
-        val outputFile = File(outputFilePath)
-        executeTestCase(createTestCaseFromTriple(ksqlFile, inputFile, outputFile))
+        runKsqlTestCaseCheckDirectories(ksqlFilePath, inputFilePath, outputFilePath)
+    }
+
+    private fun runKsqlTestCaseCheckDirectories(
+        ksqlFilePath: String,
+        inputFilePath: String,
+        outputFilePath: String
+    ) {
+        val path = File(ksqlFilePath).absolutePath
+        val ksqlPath = File(ksqlSrcDir + File.separator + ksqlFilePath).absolutePath
+        val pipelinePath = File(pipelineSrcDir + File.separator + ksqlFilePath).absolutePath
+        val resourcesPath = File(resourcesDir + File.separator + ksqlFilePath).absolutePath
+
+        if (File(path).exists()) {
+            executeTestCase(
+                createTestCaseFromTriple(
+                    File(path),
+                    File(inputFilePath),
+                    File(outputFilePath)
+                )
+            )
+        } else if (File(ksqlPath).exists()) {
+            executeTestCase(
+                createTestCaseFromTriple(
+                    File(ksqlPath),
+                    File(File(ksqlSrcDir).absolutePath + File.separator + inputFilePath),
+                    File(File(ksqlSrcDir).absolutePath + File.separator + outputFilePath)
+                )
+            )
+        } else if (File(pipelinePath).exists()) {
+            executeTestCase(
+                createTestCaseFromTriple(
+                    File(pipelinePath),
+                    File(File(pipelineSrcDir).absolutePath + File.separator + inputFilePath),
+                    File(File(pipelineSrcDir).absolutePath + File.separator + outputFilePath)
+                )
+            )
+        } else if (File(resourcesPath).exists()) {
+            executeTestCase(
+                createTestCaseFromTriple(
+                    File(resourcesPath),
+                    File(File(resourcesDir).absolutePath + File.separator + inputFilePath),
+                    File(File(resourcesDir).absolutePath + File.separator + outputFilePath)
+                )
+            )
+        }
     }
 
     fun runKsqlTestCaseShouldFail(
@@ -111,13 +157,12 @@ class KsqlTestFactory(_ksqlFileExtension: String = "ksql") {
         outputFilePath: String
     ) {
         val ksqlFile = File(ksqlFilePath)
-        val inputFile = File(inputFilePath)
-        val outputFile = File(outputFilePath)
         try {
-            executeTestCase(createTestCaseFromTriple(ksqlFile, inputFile, outputFile))
-            fail("Test failure expected") //line should not be reached
+            runKsqlTestCaseCheckDirectories(ksqlFilePath, inputFilePath, outputFilePath)
+            fail("Test failure expected for " + ksqlFile.path ) //line should not be reached
         } catch (e: AssertionError) {
             //do nothing, allow test to pass since failure is expected
+            print("This failure is expected: \n" + e.message)
         }
     }
 
@@ -127,7 +172,6 @@ class KsqlTestFactory(_ksqlFileExtension: String = "ksql") {
     }
 
     private fun createDynamicFailingTestFromTriple(ksqlFile: File, inputFile: File, outputFile: File): DynamicTest {
-        val testCase = createTestCaseFromTriple(ksqlFile, inputFile, outputFile)
         return DynamicTest.dynamicTest(ksqlFile.path) {
             try {
                 executeTestCase(createTestCaseFromTriple(ksqlFile, inputFile, outputFile))
