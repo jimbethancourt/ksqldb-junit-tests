@@ -1,4 +1,4 @@
-package com.is_gr8.ksqldb.testing
+package org.hjug.ksqldb.testing
 
 import org.junit.jupiter.api.extension.ExtensionContext
 import org.junit.jupiter.api.extension.ParameterContext

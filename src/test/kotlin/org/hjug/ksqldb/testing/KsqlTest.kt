@@ -1,4 +1,4 @@
-package com.is_gr8.ksqldb.testing
+package org.hjug.ksqldb.testing
 
 import org.junit.jupiter.api.DynamicTest
 import org.junit.jupiter.api.Test

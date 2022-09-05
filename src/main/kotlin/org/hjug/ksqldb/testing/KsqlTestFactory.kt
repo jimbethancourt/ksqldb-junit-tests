@@ -1,4 +1,4 @@
-package com.is_gr8.ksqldb.testing
+package org.hjug.ksqldb.testing
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.confluent.ksql.parser.DefaultKsqlParser

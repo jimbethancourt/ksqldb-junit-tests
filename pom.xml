@@ -4,13 +4,34 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>org.example</groupId>
+  <groupId>org.hjug.ksqldb.testing</groupId>
   <artifactId>ksqldb-junit-tests</artifactId>
-  <version>1.0-SNAPSHOT</version>
+  <version>0.1.0</version>
 
   <name>ksqldb-junit-tests</name>
-  <!-- FIXME change it to the project's website -->
-  <url>http://www.example.com</url>
+  <url>https://github.com/jimbethancourt/ksqldb-junit-tests</url>
+
+  <developers>
+    <developer>
+      <name>Jim Bethancourt</name>
+      <email>jimbethancourt@gmail.com</email>
+      <organization>Houston Java Users Group</organization>
+      <organizationUrl>http://www.hjug.org</organizationUrl>
+      <roles>
+        <role>developer</role>
+      </roles>
+      <timezone>CST</timezone>
+    </developer>
+    <developer>
+      <name>Rocco Schulz</name>
+      <organization>is-gr8</organization>
+      <organizationUrl>https://is-gr8.com/</organizationUrl>
+      <roles>
+        <role>creator</role>
+      </roles>
+      <timezone>CET</timezone>
+    </developer>
+  </developers>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
