@@ -25,7 +25,21 @@ class KsqlTestFactory(_ksqlFileExtension: String = "ksql") {
     private val pipelineSrcDir = "src/main/pipeline"
     private val resourcesDir = "src/main/resources"
 
-
+    /**
+     * Generates and executes JUnit 5 Dynamic Tests from all KSQL files found in the specified directory and all subdirectories.
+     *
+     * The following directories will be searched:
+     * <ul>
+     *   <li>project root</li>
+     *   <li>src/main/ksql</li>
+     *   <li>src/main/pipeline</li>
+     *   <li>src/main/resources</li>
+     * </ul>
+     *
+     * @param pathName Directory location to start the search
+     * @param inputFileName Optional input filename to search for adjacent to the KSQL file found.  Defaults to "input.json" if not specified
+     * @param outputFileName Optional output filename to search for adjacent to the KSQL file found.  Defaults to "output.json" if not specified
+     */
     @JvmOverloads
     fun findKsqlTestCases(
         pathName: String,
@@ -62,6 +76,21 @@ class KsqlTestFactory(_ksqlFileExtension: String = "ksql") {
             createDynamicTestFromTriple(ksqlFile, inputFile, outputFile)
         }
 
+    /**
+     * Generates and executes JUnit 5 Dynamic Tests from all KSQL files found in the specified directory and all subdirectories.  The test will fail if the underlying test passes.
+     *
+     * * The following directories will be searched:
+     * <ul>
+     *   <li>project root</li>
+     *   <li>src/main/ksql</li>
+     *   <li>src/main/pipeline</li>
+     *   <li>src/main/resources</li>
+     * </ul>
+     *
+     * @param pathName Directory location to start the search
+     * @param inputFileName Optional input filename to search for adjacent to the KSQL file found.  Defaults to "negativeInput.json" if not specified
+     * @param outputFileName Optional output filename to search for adjacent to the KSQL file found.  Defaults to "negativeOutput.json" if not specified
+     */
     @JvmOverloads
     fun findKsqlNegativeTestCases(
         pathName: String,
@@ -98,6 +127,21 @@ class KsqlTestFactory(_ksqlFileExtension: String = "ksql") {
             createDynamicFailingTestFromTriple(ksqlFile, inputFile, outputFile)
         }
 
+    /**
+     * Generates and executes JUnit 5 Test from the KSQL file specified.
+     *
+     * * The following directories will be searched.  The test will be executed only in the first directory where it is found.
+     * <ul>
+     *   <li>project root</li>
+     *   <li>src/main/ksql</li>
+     *   <li>src/main/pipeline</li>
+     *   <li>src/main/resources</li>
+     * </ul>
+     *
+     * @param ksqlFilePath Location of the KSQL file to test
+     * @param inputFilePath Location of the input filename
+     * @param outputFilePath Location of the output filename
+     */
     fun runKsqlTestCase(
         ksqlFilePath: String,
         inputFilePath: String,
@@ -151,6 +195,21 @@ class KsqlTestFactory(_ksqlFileExtension: String = "ksql") {
         }
     }
 
+    /**
+     * Generates and executes JUnit 5 Test from the KSQL file specified.  The test will fail if the underlying test passes.
+     *
+     * * The following directories will be searched.  The test will be executed only in the first directory where it is found.
+     * <ul>
+     *   <li>project root</li>
+     *   <li>src/main/ksql</li>
+     *   <li>src/main/pipeline</li>
+     *   <li>src/main/resources</li>
+     * </ul>
+     *
+     * @param ksqlFilePath Location of the KSQL file to test
+     * @param inputFilePath Location of the input filename
+     * @param outputFilePath Location of the output filename
+     */
     fun runKsqlTestCaseShouldFail(
         ksqlFilePath: String,
         inputFilePath: String,
