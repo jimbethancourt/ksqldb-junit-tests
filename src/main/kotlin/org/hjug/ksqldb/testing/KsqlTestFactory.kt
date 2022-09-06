@@ -29,12 +29,10 @@ class KsqlTestFactory(_ksqlFileExtension: String = "ksql") {
      * Generates and executes JUnit 5 Dynamic Tests from all KSQL files found in the specified directory and all subdirectories.
      *
      * The following directories will be searched:
-     * <ul>
-     *   <li>project root</li>
-     *   <li>src/main/ksql</li>
-     *   <li>src/main/pipeline</li>
-     *   <li>src/main/resources</li>
-     * </ul>
+     * - project root
+     * - src/main/ksql
+     * - src/main/pipeline
+     * - src/main/resources
      *
      * @param pathName Directory location to start the search
      * @param inputFileName Optional input filename to search for adjacent to the KSQL file found.  Defaults to "input.json" if not specified
@@ -80,12 +78,10 @@ class KsqlTestFactory(_ksqlFileExtension: String = "ksql") {
      * Generates and executes JUnit 5 Dynamic Tests from all KSQL files found in the specified directory and all subdirectories.  The test will fail if the underlying test passes.
      *
      * * The following directories will be searched:
-     * <ul>
-     *   <li>project root</li>
-     *   <li>src/main/ksql</li>
-     *   <li>src/main/pipeline</li>
-     *   <li>src/main/resources</li>
-     * </ul>
+     * - project root
+     * - src/main/ksql
+     * - src/main/pipeline
+     * - src/main/resources
      *
      * @param pathName Directory location to start the search
      * @param inputFileName Optional input filename to search for adjacent to the KSQL file found.  Defaults to "negativeInput.json" if not specified
@@ -131,12 +127,10 @@ class KsqlTestFactory(_ksqlFileExtension: String = "ksql") {
      * Generates and executes JUnit 5 Test from the KSQL file specified.
      *
      * * The following directories will be searched.  The test will be executed only in the first directory where it is found.
-     * <ul>
-     *   <li>project root</li>
-     *   <li>src/main/ksql</li>
-     *   <li>src/main/pipeline</li>
-     *   <li>src/main/resources</li>
-     * </ul>
+     * - project root
+     * - src/main/ksql
+     * - src/main/pipeline
+     * - src/main/resources
      *
      * @param ksqlFilePath Location of the KSQL file to test
      * @param inputFilePath Location of the input filename
@@ -199,12 +193,10 @@ class KsqlTestFactory(_ksqlFileExtension: String = "ksql") {
      * Generates and executes JUnit 5 Test from the KSQL file specified.  The test will fail if the underlying test passes.
      *
      * * The following directories will be searched.  The test will be executed only in the first directory where it is found.
-     * <ul>
-     *   <li>project root</li>
-     *   <li>src/main/ksql</li>
-     *   <li>src/main/pipeline</li>
-     *   <li>src/main/resources</li>
-     * </ul>
+     * - project root
+     * - src/main/ksql
+     * - src/main/pipeline
+     * - src/main/resources
      *
      * @param ksqlFilePath Location of the KSQL file to test
      * @param inputFilePath Location of the input filename
